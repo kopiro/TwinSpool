@@ -8,12 +8,12 @@
   IgnorableNamespaces="uap mp uap3 rescap">
   <Identity
     Name="deste.TwinSpool"
-    Publisher="CN=deste"
+    Publisher="CN=kopiro"
     Version="1.0.0.0" />
   <mp:PhoneIdentity PhoneProductId="4dfdf93d-f347-4b54-9d1d-c7a5d6e95be4" PhonePublisherId="00000000-0000-0000-0000-000000000000"/>
   <Properties>
     <DisplayName>TwinSpool</DisplayName>
-    <PublisherDisplayName>deste</PublisherDisplayName>
+    <PublisherDisplayName>kopiro</PublisherDisplayName>
     <Logo>Assets\StoreLogo.png</Logo>
   </Properties>
   <Dependencies>

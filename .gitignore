@@ -15,6 +15,11 @@ AppPackages/
 *.msix
 *.msixbundle
 
+# Local signing secrets
+signing/
+*.pfx
+*.cer
+
 # Logs and transient files
 *.log
 *.cache
