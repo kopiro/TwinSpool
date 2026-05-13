@@ -9,7 +9,7 @@
     <OutputType>AppContainerExe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>XboxRemoteSync</RootNamespace>
-    <AssemblyName>XboxRemoteSync</AssemblyName>
+    <AssemblyName>RemoteSync</AssemblyName>
     <DefaultLanguage>en-US</DefaultLanguage>
     <TargetPlatformIdentifier>UAP</TargetPlatformIdentifier>
     <TargetPlatformVersion>10.0.26100.0</TargetPlatformVersion>

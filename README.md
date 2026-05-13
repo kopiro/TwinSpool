@@ -1,4 +1,4 @@
-# Xbox Remote Sync Utility
+# RemoteSync Utility
 
 Sideloaded Xbox UWP utility for one-way incremental sync from SMB or SFTP sources to a user-selected USB folder.
 

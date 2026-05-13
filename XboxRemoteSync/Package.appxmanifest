@@ -7,12 +7,12 @@
   xmlns:rescap="http://schemas.microsoft.com/appx/manifest/foundation/windows10/restrictedcapabilities"
   IgnorableNamespaces="uap mp uap3 rescap">
   <Identity
-    Name="deste.XboxRemoteSync"
+    Name="deste.RemoteSync"
     Publisher="CN=deste"
     Version="1.0.0.0" />
   <mp:PhoneIdentity PhoneProductId="4dfdf93d-f347-4b54-9d1d-c7a5d6e95be4" PhonePublisherId="00000000-0000-0000-0000-000000000000"/>
   <Properties>
-    <DisplayName>Xbox Remote Sync</DisplayName>
+    <DisplayName>RemoteSync</DisplayName>
     <PublisherDisplayName>deste</PublisherDisplayName>
     <Logo>Assets\StoreLogo.png</Logo>
   </Properties>
@@ -26,7 +26,7 @@
   <Applications>
     <Application Id="App" Executable="$targetnametoken$.exe" EntryPoint="XboxRemoteSync.App">
       <uap:VisualElements
-        DisplayName="Xbox Remote Sync"
+        DisplayName="RemoteSync"
         Description="Incremental network to USB sync for sideloaded Xbox content libraries."
         BackgroundColor="#101820"
         Square150x150Logo="Assets\Square150x150Logo.png"

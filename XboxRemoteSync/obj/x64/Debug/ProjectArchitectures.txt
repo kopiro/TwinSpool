@@ -1,1 +1,0 @@
-C:\Users\deste\Documents\XBOXRemoteSync\XboxRemoteSync\XboxRemoteSync.csproj;x64
