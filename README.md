@@ -1,26 +1,13 @@
-# TwinSpool Utility
+# TwinSpool
 
-Sideloaded Xbox UWP utility for one-way incremental sync from SMB or SFTP sources to a user-selected USB folder.
+TwinSpool copies files from a remote SMB or SFTP location to a folder you choose on USB storage.
 
-## What's included
+It is meant for Xbox Dev Mode and keeps repeated syncs fast by copying only files that are new or changed since the last run.
 
-- UWP/XAML app shell with `Windows.Universal` and `Windows.Xbox` targeting
-- Manifest-declared removable storage access and a broad fixed extension whitelist for common archives, media, documents, disk images, and ROM/content files
-- Controller-first flow for profiles, editing SMB or SFTP settings, choosing a USB destination, and running syncs
-- Sync core built around `ISyncTransport`, `SmbSyncTransport`, `SftpSyncTransport`, `SyncProfile`, `SyncEntry`, `SyncPlan`, and `SyncJobState`
-- Local JSON persistence for profiles and bounded run logs
-- Password storage through `PasswordVault` with encrypted app-local fallback
+## What it does
 
-## Incremental sync note
-
-UWP removable storage APIs on Xbox do not provide a clean way to preserve remote last-write timestamps during copy. To keep v1 incremental sync reliable without unsupported filesystem tricks, the app writes a small `.twinspool-index.json` file into the selected destination root and compares remote entries against that stored size/timestamp index on later runs.
-
-## Build
-
-Open [TwinSpool.sln](C:\Users\deste\Documents\XBOXRemoteSync\TwinSpool.sln) in Visual Studio 2022 with the UWP workload installed, restore NuGet packages, and deploy in Xbox Dev Mode.
-
-## Known follow-up items
-
-- Validate the exact `SMBLibrary` API surface against the chosen package version in Visual Studio and adjust if needed
-- Replace placeholder asset images in `Assets/`
-- Run on hardware to verify folder picker behavior and Xbox controller focus
+- Save reusable sync profiles.
+- Connect to SMB or SFTP sources.
+- Pick a USB destination folder.
+- Preview and run one-way incremental syncs.
+- Keep a local history of recent sync runs.
