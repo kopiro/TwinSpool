@@ -1,5 +1,7 @@
 # TwinSpool
 
+![TwinSpool app icon](AppIcon.png)
+
 TwinSpool copies files from a remote SMB or SFTP location to a folder you choose on your Xbox console, including USB storage or any other accessible destination.
 
 It is meant for Xbox Dev Mode and keeps repeated syncs fast by copying only files that are new or changed since the last run.
