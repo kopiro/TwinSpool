@@ -1,4 +1,4 @@
-# RemoteSync Utility
+# TwinSpool Utility
 
 Sideloaded Xbox UWP utility for one-way incremental sync from SMB or SFTP sources to a user-selected USB folder.
 
@@ -13,11 +13,11 @@ Sideloaded Xbox UWP utility for one-way incremental sync from SMB or SFTP source
 
 ## Incremental sync note
 
-UWP removable storage APIs on Xbox do not provide a clean way to preserve remote last-write timestamps during copy. To keep v1 incremental sync reliable without unsupported filesystem tricks, the app writes a small `.xboxremotesync-index.json` file into the selected destination root and compares remote entries against that stored size/timestamp index on later runs.
+UWP removable storage APIs on Xbox do not provide a clean way to preserve remote last-write timestamps during copy. To keep v1 incremental sync reliable without unsupported filesystem tricks, the app writes a small `.twinspool-index.json` file into the selected destination root and compares remote entries against that stored size/timestamp index on later runs.
 
 ## Build
 
-Open [XboxRemoteSync.sln](C:\Users\deste\Documents\XBOXRemoteSync\XboxRemoteSync.sln) in Visual Studio 2022 with the UWP workload installed, restore NuGet packages, and deploy in Xbox Dev Mode.
+Open [TwinSpool.sln](C:\Users\deste\Documents\XBOXRemoteSync\TwinSpool.sln) in Visual Studio 2022 with the UWP workload installed, restore NuGet packages, and deploy in Xbox Dev Mode.
 
 ## Known follow-up items
 
