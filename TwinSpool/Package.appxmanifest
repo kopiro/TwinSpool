@@ -153,6 +153,7 @@
               <uap:FileType>.xhtml</uap:FileType>
               <uap:FileType>.xls</uap:FileType>
               <uap:FileType>.xlsx</uap:FileType>
+              <uap:FileType>.xiso</uap:FileType>
               <uap:FileType>.xml</uap:FileType>
               <uap:FileType>.xz</uap:FileType>
               <uap:FileType>.yaml</uap:FileType>

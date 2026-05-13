@@ -19,7 +19,7 @@ namespace TwinSpool.Utilities
             ".opus", ".pdf", ".pce", ".png", ".ppt", ".pptx", ".ps1", ".py", ".rar", ".rtf",
             ".sfc", ".sh", ".smd", ".smc", ".sms", ".sql", ".sub", ".svg", ".tar", ".tgz",
             ".tif", ".tiff", ".torrent", ".ts", ".txt", ".v64", ".wav", ".webm", ".webp", ".wma",
-            ".wmv", ".xhtml", ".xls", ".xlsx", ".xml", ".xz", ".yaml", ".yml", ".z64", ".zip",
+            ".wmv", ".xhtml", ".xls", ".xlsx", ".xiso", ".xml", ".xz", ".yaml", ".yml", ".z64", ".zip",
             ".zso"
         };
 
