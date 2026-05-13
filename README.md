@@ -1,6 +1,6 @@
 # TwinSpool
 
-![TwinSpool app icon](AppIcon.png)
+<img src="AppIcon.png" alt="TwinSpool app icon" width="250">
 
 TwinSpool copies files from a remote SMB or SFTP location to a folder you choose on your Xbox console, including USB storage or any other accessible destination.
 
@@ -24,3 +24,8 @@ It is meant for Xbox Dev Mode and keeps repeated syncs fast by copying only file
 6. Upload the `.msix` file as the main package.
 7. Upload the `Dependencies/x64/*.appx` files as dependencies if Device Portal asks for them.
 8. Start the install, then launch TwinSpool from Dev Home.
+
+## How to use it
+
+1. Open Saved Profiles, add a profile, choose the protocol, enter your credentials, and pick the destination folder.
+2. Open Sync, select the profile, click Plan to preview the new or changed files, then click Start Sync.
