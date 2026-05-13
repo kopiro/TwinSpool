@@ -1,0 +1,164 @@
+name: Release Xbox Dev Mode build
+
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    name: Build and publish Dev Mode package
+    runs-on: windows-latest
+
+    env:
+      SOLUTION_PATH: TwinSpool.sln
+      MANIFEST_PATH: TwinSpool/Package.appxmanifest
+      PACKAGE_OUTPUT_DIR: ${{ github.workspace }}\artifacts\appx\
+      DIST_DIR: ${{ github.workspace }}\dist
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up MSBuild
+        uses: microsoft/setup-msbuild@v2
+
+      - name: Validate tag and patch manifest version
+        shell: pwsh
+        run: |
+          $tag = "${{ github.ref_name }}"
+          $match = [regex]::Match($tag, '^v(?<major>\d+)\.(?<minor>\d+)\.(?<patch>\d+)(?:\.(?<build>\d+))?$')
+          if (-not $match.Success) {
+            throw "Release tags must use vMAJOR.MINOR.PATCH or vMAJOR.MINOR.PATCH.BUILD, for example v1.2.3."
+          }
+
+          $build = $match.Groups['build'].Value
+          if ([string]::IsNullOrWhiteSpace($build)) {
+            $build = '0'
+          }
+
+          $manifestVersion = "$($match.Groups['major'].Value).$($match.Groups['minor'].Value).$($match.Groups['patch'].Value).$build"
+          $assetName = "TwinSpool-$tag-x64-devmode.zip"
+
+          "APP_VERSION=$manifestVersion" | Out-File -FilePath $env:GITHUB_ENV -Append
+          "RELEASE_TAG=$tag" | Out-File -FilePath $env:GITHUB_ENV -Append
+          "ASSET_NAME=$assetName" | Out-File -FilePath $env:GITHUB_ENV -Append
+
+          $manifestPath = Join-Path $env:GITHUB_WORKSPACE $env:MANIFEST_PATH
+          [xml]$manifest = Get-Content -LiteralPath $manifestPath
+          $manifest.Package.Identity.Version = $manifestVersion
+          $manifest.Save($manifestPath)
+
+      - name: Decode signing certificate
+        shell: pwsh
+        env:
+          PFX_BASE64: ${{ secrets.TWIN_SPOOL_PFX_BASE64 }}
+        run: |
+          if ([string]::IsNullOrWhiteSpace($env:PFX_BASE64)) {
+            throw "Missing TWIN_SPOOL_PFX_BASE64 repository secret."
+          }
+
+          $pfxPath = Join-Path $env:RUNNER_TEMP 'TwinSpoolSigning.pfx'
+          $pfxBytes = [Convert]::FromBase64String(($env:PFX_BASE64 -replace '\s', ''))
+          [IO.File]::WriteAllBytes($pfxPath, $pfxBytes)
+          "PFX_PATH=$pfxPath" | Out-File -FilePath $env:GITHUB_ENV -Append
+
+      - name: Build signed x64 package
+        shell: pwsh
+        env:
+          PFX_PASSWORD: ${{ secrets.TWIN_SPOOL_PFX_PASSWORD }}
+        run: |
+          if ([string]::IsNullOrWhiteSpace($env:PFX_PASSWORD)) {
+            throw "Missing TWIN_SPOOL_PFX_PASSWORD repository secret."
+          }
+
+          New-Item -ItemType Directory -Force -Path $env:PACKAGE_OUTPUT_DIR | Out-Null
+
+          $msbuildArgs = @(
+            $env:SOLUTION_PATH,
+            '/restore',
+            '/m',
+            '/p:Configuration=Release',
+            '/p:Platform=x64',
+            '/p:AppxPackageSigningEnabled=true',
+            "/p:PackageCertificateKeyFile=$env:PFX_PATH",
+            "/p:PackageCertificatePassword=$env:PFX_PASSWORD",
+            '/p:AppxBundle=Never',
+            '/p:AppxBundlePlatforms=x64',
+            '/p:UapAppxPackageBuildMode=SideloadOnly',
+            "/p:AppxPackageDir=$env:PACKAGE_OUTPUT_DIR"
+          )
+
+          msbuild @msbuildArgs
+
+      - name: Create Dev Mode ZIP
+        shell: pwsh
+        run: |
+          $packageRoot = $env:PACKAGE_OUTPUT_DIR
+          $msix = Get-ChildItem -LiteralPath $packageRoot -Recurse -File -Filter 'TwinSpool_*.msix' |
+            Sort-Object LastWriteTimeUtc -Descending |
+            Select-Object -First 1
+
+          if (-not $msix) {
+            throw "Could not find generated TwinSpool MSIX under $packageRoot."
+          }
+
+          $layout = Join-Path $env:DIST_DIR 'TwinSpool-devmode'
+          $dependencyTarget = Join-Path $layout 'Dependencies\x64'
+          New-Item -ItemType Directory -Force -Path $layout | Out-Null
+          New-Item -ItemType Directory -Force -Path $dependencyTarget | Out-Null
+
+          Copy-Item -LiteralPath $msix.FullName -Destination $layout
+
+          $dependencySource = Join-Path $msix.DirectoryName 'Dependencies\x64'
+          if (Test-Path -LiteralPath $dependencySource) {
+            Get-ChildItem -LiteralPath $dependencySource -File -Filter '*.appx' |
+              Copy-Item -Destination $dependencyTarget
+          }
+
+          Get-ChildItem -LiteralPath $msix.DirectoryName -File -Filter '*.cer' |
+            Copy-Item -Destination $layout
+
+          $installNotes = @'
+          # Install TwinSpool on Xbox Dev Mode
+
+          1. Boot your Xbox into Dev Mode.
+          2. Enable or open Xbox Device Portal from Dev Home.
+          3. Open the Device Portal URL shown on the Xbox from a browser on the same network.
+          4. Go to the app install/add page.
+          5. Upload the TwinSpool `.msix` file as the main package.
+          6. Upload the `.appx` files in `Dependencies/x64` as dependencies if the portal prompts for them.
+          7. Start the install, then launch TwinSpool from Dev Home.
+          '@
+          $installNotes = ($installNotes -split "`r?`n" | ForEach-Object { $_.TrimStart() }) -join "`r`n"
+          Set-Content -LiteralPath (Join-Path $layout 'INSTALL.md') -Value $installNotes -Encoding UTF8
+
+          $assetPath = Join-Path $env:DIST_DIR $env:ASSET_NAME
+          Compress-Archive -Path (Join-Path $layout '*') -DestinationPath $assetPath -Force
+          "ASSET_PATH=$assetPath" | Out-File -FilePath $env:GITHUB_ENV -Append
+
+      - name: Publish GitHub Release
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          $notesPath = Join-Path $env:RUNNER_TEMP 'release-notes.md'
+          $notes = @"
+          TwinSpool Xbox Dev Mode build for $env:RELEASE_TAG.
+
+          Download and unzip ``$env:ASSET_NAME``, then install the included MSIX and x64 dependencies through Xbox Device Portal.
+          "@
+          $notes = ($notes -split "`r?`n" | ForEach-Object { $_.TrimStart() }) -join "`r`n"
+          Set-Content -LiteralPath $notesPath -Value $notes -Encoding UTF8
+
+          gh release view $env:RELEASE_TAG *> $null
+          if ($LASTEXITCODE -eq 0) {
+            gh release upload $env:RELEASE_TAG $env:ASSET_PATH --clobber
+          } else {
+            gh release create $env:RELEASE_TAG $env:ASSET_PATH --title "TwinSpool $env:RELEASE_TAG" --notes-file $notesPath --verify-tag
+          }
