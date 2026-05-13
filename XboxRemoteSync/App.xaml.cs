@@ -3,6 +3,7 @@ using Windows.ApplicationModel;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using XboxRemoteSync.Services;
+using XboxRemoteSync.Utilities;
 
 namespace XboxRemoteSync
 {
@@ -12,6 +13,7 @@ namespace XboxRemoteSync
         {
             InitializeComponent();
             Suspending += OnSuspending;
+            UnhandledException += OnUnhandledException;
             AppServices.Initialize();
         }
 
@@ -35,6 +37,12 @@ namespace XboxRemoteSync
 
         private void OnSuspending(object sender, SuspendingEventArgs e)
         {
+        }
+
+        private async void OnUnhandledException(object sender, UnhandledExceptionEventArgs e)
+        {
+            e.Handled = true;
+            await DiagnosticsLog.AppendAsync("UnhandledException", e.Exception);
         }
     }
 }

@@ -3,6 +3,7 @@ using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Navigation;
 using XboxRemoteSync.Models;
+using XboxRemoteSync.Utilities;
 using XboxRemoteSync.ViewModels;
 
 namespace XboxRemoteSync.Views
@@ -19,7 +20,15 @@ namespace XboxRemoteSync.Views
 
         protected override async void OnNavigatedTo(NavigationEventArgs e)
         {
-            await ViewModel.InitializeAsync(e.Parameter as SyncProfile);
+            try
+            {
+                await ViewModel.InitializeAsync(e.Parameter as SyncProfile);
+            }
+            catch (Exception ex)
+            {
+                await DiagnosticsLog.AppendAsync("SyncRunPage.OnNavigatedTo", ex);
+                ViewModel.Status = "Unable to load the sync page.";
+            }
         }
 
         private async void Start_Click(object sender, RoutedEventArgs e)
@@ -40,6 +49,7 @@ namespace XboxRemoteSync.Views
             }
             catch (Exception ex)
             {
+                await DiagnosticsLog.AppendAsync("SyncRunPage.Start_Click", ex);
                 ViewModel.Status = ex.Message;
             }
         }
@@ -52,6 +62,7 @@ namespace XboxRemoteSync.Views
             }
             catch (Exception ex)
             {
+                await DiagnosticsLog.AppendAsync("SyncRunPage.RefreshPreview_Click", ex);
                 ViewModel.Status = ex.Message;
             }
         }
@@ -64,6 +75,7 @@ namespace XboxRemoteSync.Views
             }
             catch (Exception ex)
             {
+                await DiagnosticsLog.AppendAsync("SyncRunPage.ProfileSelection_Changed", ex);
                 ViewModel.Status = ex.Message;
             }
         }

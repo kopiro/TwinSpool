@@ -92,6 +92,7 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.NETCore.UniversalWindowsPlatform" Version="6.2.14" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+    <PackageReference Include="SSH.NET" Version="2025.1.0" />
     <PackageReference Include="SMBLibrary" Version="1.5.2" />
   </ItemGroup>
   <ItemGroup>
@@ -144,12 +145,16 @@
     <Compile Include="Services\JsonProfileRepository.cs" />
     <Compile Include="Services\JsonRunLogRepository.cs" />
     <Compile Include="Services\SmbSyncTransport.cs" />
+    <Compile Include="Services\SftpSyncTransport.cs" />
     <Compile Include="Services\SyncEngine.cs" />
+    <Compile Include="Services\SyncTransportFactory.cs" />
     <Compile Include="Services\SyncUiState.cs" />
     <Compile Include="Services\TransportException.cs" />
     <Compile Include="Utilities\ExtensionWhitelist.cs" />
     <Compile Include="Utilities\FutureAccessTokenValidator.cs" />
     <Compile Include="Utilities\StorageHelpers.cs" />
+    <Compile Include="Utilities\DiagnosticsLog.cs" />
+    <Compile Include="Utilities\SyncProtocolHelpers.cs" />
     <Compile Include="ViewModels\LogsViewModel.cs" />
     <Compile Include="ViewModels\ProfileEditorViewModel.cs" />
     <Compile Include="ViewModels\ProfilesViewModel.cs" />

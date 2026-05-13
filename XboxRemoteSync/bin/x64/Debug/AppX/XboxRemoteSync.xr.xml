@@ -5,6 +5,7 @@
     <RootPropertyPathName Name="Name" />
     <RootPropertyPathName Name="Profiles" />
     <RootPropertyPathName Name="SelectedProfile" />
+    <RootPropertyPathName Name="StatusMessage" />
     <RootPropertyPathName Name="CanTestConnection" />
     <RootPropertyPathName Name="TestConnectionButtonText" />
     <RootPropertyPathName Name="CanSave" />
@@ -12,7 +13,14 @@
     <RootPropertyPathName Name="DestinationDisplayName" />
     <RootPropertyPathName Name="Username" />
     <RootPropertyPathName Name="RemoteRoot" />
+    <RootPropertyPathName Name="RemoteRootPlaceholder" />
+    <RootPropertyPathName Name="RemoteRootLabel" />
     <RootPropertyPathName Name="Share" />
+    <RootPropertyPathName Name="SharePlaceholder" />
+    <RootPropertyPathName Name="IsShareEnabled" />
+    <RootPropertyPathName Name="ShareVisibility" />
+    <RootPropertyPathName Name="ShareLabel" />
+    <RootPropertyPathName Name="Port" />
     <RootPropertyPathName Name="Server" />
     <RootPropertyPathName Name="SupportedProtocols" />
     <RootPropertyPathName Name="Protocol" />
@@ -67,6 +75,7 @@
       <RootProperty Name="TextWrapping" />
       <RootProperty Name="Text" />
       <RootProperty Name="Style" />
+      <RootProperty Name="Visibility" />
       <RootProperty Name="Margin" />
     </RootType>
     <RootType FullName="Windows.UI.Xaml.FrameworkElement">
@@ -93,6 +102,9 @@
       <RootProperty Name="Background" />
       <RootProperty Name="BorderBrush" />
       <RootProperty Name="PlaceholderText" />
+      <RootProperty Name="InputScope" />
+      <RootProperty Name="IsEnabled" />
+      <RootProperty Name="Visibility" />
     </RootType>
     <RootType FullName="Windows.UI.Xaml.Controls.PasswordBox">
       <RootEvent Name="PasswordChanged" />

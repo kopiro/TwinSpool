@@ -1,9 +1,13 @@
 {
   "version": 2,
-  "dgSpecHash": "xCDFwsRxoz0=",
+  "dgSpecHash": "5tQ1Gcq2yBw=",
   "success": true,
   "projectFilePath": "C:\\Users\\deste\\Documents\\XBOXRemoteSync\\XboxRemoteSync\\XboxRemoteSync.csproj",
   "expectedPackageFiles": [
+    "C:\\Users\\deste\\.nuget\\packages\\bouncycastle.cryptography\\2.6.2\\bouncycastle.cryptography.2.6.2.nupkg.sha512",
+    "C:\\Users\\deste\\.nuget\\packages\\microsoft.bcl.asyncinterfaces\\8.0.0\\microsoft.bcl.asyncinterfaces.8.0.0.nupkg.sha512",
+    "C:\\Users\\deste\\.nuget\\packages\\microsoft.extensions.dependencyinjection.abstractions\\8.0.2\\microsoft.extensions.dependencyinjection.abstractions.8.0.2.nupkg.sha512",
+    "C:\\Users\\deste\\.nuget\\packages\\microsoft.extensions.logging.abstractions\\8.0.3\\microsoft.extensions.logging.abstractions.8.0.3.nupkg.sha512",
     "C:\\Program Files (x86)\\Microsoft SDKs\\UWPNuGetPackages\\microsoft.net.native.compiler\\2.2.12-rel-31116-00\\microsoft.net.native.compiler.2.2.12-rel-31116-00.nupkg.sha512",
     "C:\\Program Files (x86)\\Microsoft SDKs\\UWPNuGetPackages\\microsoft.net.uwpcoreruntimesdk\\2.2.14\\microsoft.net.uwpcoreruntimesdk.2.2.14.nupkg.sha512",
     "C:\\Program Files (x86)\\Microsoft SDKs\\UWPNuGetPackages\\microsoft.netcore.platforms\\2.1.0\\microsoft.netcore.platforms.2.1.0.nupkg.sha512",
@@ -29,7 +33,12 @@
     "C:\\Program Files (x86)\\Microsoft SDKs\\UWPNuGetPackages\\runtime.win10-x86.microsoft.net.uwpcoreruntimesdk\\2.2.14\\runtime.win10-x86.microsoft.net.uwpcoreruntimesdk.2.2.14.nupkg.sha512",
     "C:\\Program Files (x86)\\Microsoft SDKs\\UWPNuGetPackages\\runtime.win10-x86.microsoft.netcore.universalwindowsplatform\\6.2.14\\runtime.win10-x86.microsoft.netcore.universalwindowsplatform.6.2.14.nupkg.sha512",
     "C:\\Users\\deste\\.nuget\\packages\\smblibrary\\1.5.2\\smblibrary.1.5.2.nupkg.sha512",
-    "C:\\Users\\deste\\.nuget\\packages\\system.buffers\\4.5.1\\system.buffers.4.5.1.nupkg.sha512"
+    "C:\\Users\\deste\\.nuget\\packages\\ssh.net\\2025.1.0\\ssh.net.2025.1.0.nupkg.sha512",
+    "C:\\Users\\deste\\.nuget\\packages\\system.buffers\\4.5.1\\system.buffers.4.5.1.nupkg.sha512",
+    "C:\\Users\\deste\\.nuget\\packages\\system.formats.asn1\\8.0.2\\system.formats.asn1.8.0.2.nupkg.sha512",
+    "C:\\Users\\deste\\.nuget\\packages\\system.memory\\4.5.5\\system.memory.4.5.5.nupkg.sha512",
+    "C:\\Users\\deste\\.nuget\\packages\\system.runtime.compilerservices.unsafe\\4.5.3\\system.runtime.compilerservices.unsafe.4.5.3.nupkg.sha512",
+    "C:\\Users\\deste\\.nuget\\packages\\system.threading.tasks.extensions\\4.5.4\\system.threading.tasks.extensions.4.5.4.nupkg.sha512"
   ],
   "logs": []
 }

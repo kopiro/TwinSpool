@@ -15,6 +15,8 @@ namespace XboxRemoteSync.Models
 
         public string Server { get; set; }
 
+        public int? Port { get; set; }
+
         public string Share { get; set; }
 
         public string RemoteRoot { get; set; } = "/";
@@ -41,10 +43,13 @@ namespace XboxRemoteSync.Models
                 var authority = string.IsNullOrWhiteSpace(Username)
                     ? Server ?? string.Empty
                     : $"{Username}:***@{Server}";
+                var portSegment = Port.HasValue ? $":{Port.Value}" : string.Empty;
 
-                var shareSegment = string.IsNullOrWhiteSpace(Share) ? string.Empty : $"/{Share.Trim('/')}";
+                var shareSegment = SyncProtocolHelpers.RequiresShare(Protocol) && !string.IsNullOrWhiteSpace(Share)
+                    ? $"/{Share.Trim('/')}"
+                    : string.Empty;
                 var rootSegment = NormalizeRemoteRoot(RemoteRoot);
-                return $"{(Protocol ?? "SMB").ToLowerInvariant()}://{authority}{shareSegment}{rootSegment}";
+                return $"{SyncProtocolHelpers.Normalize(Protocol).ToLowerInvariant()}://{authority}{portSegment}{shareSegment}{rootSegment}";
             }
         }
 

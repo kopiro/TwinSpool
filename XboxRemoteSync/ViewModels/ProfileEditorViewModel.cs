@@ -1,9 +1,11 @@
 using System;
+using System.Globalization;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Windows.Storage;
 using Windows.Storage.AccessCache;
+using Windows.UI.Xaml;
 using XboxRemoteSync.Common;
 using XboxRemoteSync.Models;
 using XboxRemoteSync.Services;
@@ -15,11 +17,13 @@ namespace XboxRemoteSync.ViewModels
     {
         private string _name;
         private string _server;
+        private string _port;
         private string _share;
         private string _remoteRoot;
         private string _protocol;
         private string _username;
         private string _destinationDisplayName;
+        private string _statusMessage;
         private string _saveButtonText;
         private string _testConnectionButtonText;
         private bool _canSave;
@@ -28,7 +32,7 @@ namespace XboxRemoteSync.ViewModels
         private string _savedFingerprint;
         private string _validatedConnectionFingerprint;
 
-        public string[] SupportedProtocols { get; } = { "SMB" };
+        public string[] SupportedProtocols { get; } = { SyncProtocolHelpers.Smb, SyncProtocolHelpers.Sftp };
 
         public SyncProfile Profile { get; private set; }
 
@@ -50,6 +54,18 @@ namespace XboxRemoteSync.ViewModels
             set
             {
                 if (SetProperty(ref _server, value))
+                {
+                    RefreshActionState();
+                }
+            }
+        }
+
+        public string Port
+        {
+            get => _port;
+            set
+            {
+                if (SetProperty(ref _port, value))
                 {
                     RefreshActionState();
                 }
@@ -99,10 +115,28 @@ namespace XboxRemoteSync.ViewModels
             {
                 if (SetProperty(ref _protocol, value))
                 {
+                    RaisePropertyChanged(nameof(ShareLabel));
+                    RaisePropertyChanged(nameof(SharePlaceholder));
+                    RaisePropertyChanged(nameof(IsShareEnabled));
+                    RaisePropertyChanged(nameof(ShareVisibility));
+                    RaisePropertyChanged(nameof(RemoteRootLabel));
+                    RaisePropertyChanged(nameof(RemoteRootPlaceholder));
                     RefreshActionState();
                 }
             }
         }
+
+        public string ShareLabel => SyncProtocolHelpers.RequiresShare(Protocol) ? "Share" : "Share (SMB only)";
+
+        public string SharePlaceholder => SyncProtocolHelpers.RequiresShare(Protocol) ? "MediaShare" : "Unused for SFTP";
+
+        public bool IsShareEnabled => SyncProtocolHelpers.RequiresShare(Protocol);
+
+        public Visibility ShareVisibility => SyncProtocolHelpers.RequiresShare(Protocol) ? Visibility.Visible : Visibility.Collapsed;
+
+        public string RemoteRootLabel => SyncProtocolHelpers.RequiresShare(Protocol) ? "Subdirectory" : "Remote Root";
+
+        public string RemoteRootPlaceholder => SyncProtocolHelpers.RequiresShare(Protocol) ? "/library" : "/home/xboxsync/library";
 
         public string DestinationDisplayName
         {
@@ -114,6 +148,12 @@ namespace XboxRemoteSync.ViewModels
                     RefreshActionState();
                 }
             }
+        }
+
+        public string StatusMessage
+        {
+            get => _statusMessage;
+            private set => SetProperty(ref _statusMessage, value);
         }
 
         public string SaveButtonText
@@ -148,14 +188,16 @@ namespace XboxRemoteSync.ViewModels
             };
 
             Name = Profile.Name;
-            Protocol = string.IsNullOrWhiteSpace(Profile.Protocol) ? "SMB" : Profile.Protocol;
+            Protocol = SyncProtocolHelpers.Normalize(Profile.Protocol);
             Server = Profile.Server;
+            Port = Profile.Port?.ToString(CultureInfo.InvariantCulture) ?? string.Empty;
             Share = Profile.Share;
             RemoteRoot = Profile.RemoteRoot;
             Username = Profile.Username;
             DestinationDisplayName = string.IsNullOrWhiteSpace(Profile.DestinationDisplayName) ? "Choose destination" : Profile.DestinationDisplayName;
             _savedFingerprint = BuildFingerprint();
             _validatedConnectionFingerprint = null;
+            StatusMessage = string.Empty;
             SaveButtonText = "Saved";
             TestConnectionButtonText = "Test Connection";
             RefreshActionState();
@@ -166,6 +208,7 @@ namespace XboxRemoteSync.ViewModels
         {
             _isBusy = true;
             SaveButtonText = "Saving...";
+            StatusMessage = string.Empty;
             RefreshActionState();
             try
             {
@@ -188,6 +231,7 @@ namespace XboxRemoteSync.ViewModels
 
                 await AppServices.ProfileRepository.SaveAsync(profiles);
                 _savedFingerprint = BuildFingerprint();
+                StatusMessage = $"Saved '{Profile.Name}'.";
                 SaveButtonText = "Saved";
             }
             finally
@@ -201,6 +245,7 @@ namespace XboxRemoteSync.ViewModels
         {
             _isBusy = true;
             TestConnectionButtonText = "Testing...";
+            StatusMessage = string.Empty;
             RefreshActionState();
             try
             {
@@ -213,14 +258,22 @@ namespace XboxRemoteSync.ViewModels
 
                 using (var cancellationTokenSource = new CancellationTokenSource())
                 {
-                    var transport = new SmbSyncTransport();
+                    var transport = SyncTransportFactory.Create(draftProfile.Protocol);
                     await transport.ConnectAsync(draftProfile, effectivePassword, cancellationTokenSource.Token);
                     await transport.DisconnectAsync();
                 }
 
                 _validatedConnectionFingerprint = BuildConnectionFingerprint();
                 TestConnectionButtonText = "Connection Successful";
-                return $"Connection to '{draftProfile.Server}\\{draftProfile.Share}' succeeded.";
+                StatusMessage = $"Connection to '{draftProfile.ConnectionDisplay}' succeeded.";
+                return StatusMessage;
+            }
+            catch (Exception ex)
+            {
+                _validatedConnectionFingerprint = null;
+                TestConnectionButtonText = "Failed";
+                StatusMessage = ex.Message;
+                return StatusMessage;
             }
             finally
             {
@@ -247,6 +300,11 @@ namespace XboxRemoteSync.ViewModels
             RefreshActionState();
         }
 
+        public void SetStatusMessage(string message)
+        {
+            StatusMessage = message ?? string.Empty;
+        }
+
         public Task SetDestinationAsync(StorageFolder folder)
         {
             if (folder == null)
@@ -270,8 +328,9 @@ namespace XboxRemoteSync.ViewModels
             };
 
             profile.Name = Name?.Trim();
-            profile.Protocol = string.IsNullOrWhiteSpace(Protocol) ? "SMB" : Protocol.Trim().ToUpperInvariant();
+            profile.Protocol = SyncProtocolHelpers.Normalize(Protocol);
             profile.Server = Server?.Trim();
+            profile.Port = TryParsePort(out var port) ? port : (int?)null;
             profile.Share = Share?.Trim();
             profile.RemoteRoot = string.IsNullOrWhiteSpace(RemoteRoot) ? "/" : RemoteRoot.Trim();
             profile.Username = Username?.Trim();
@@ -287,7 +346,9 @@ namespace XboxRemoteSync.ViewModels
                 !string.IsNullOrWhiteSpace(Name) &&
                 !string.IsNullOrWhiteSpace(Protocol) &&
                 !string.IsNullOrWhiteSpace(Server) &&
-                !string.IsNullOrWhiteSpace(Share);
+                HasValidPort() &&
+                (!SyncProtocolHelpers.RequiresShare(Protocol) || !string.IsNullOrWhiteSpace(Share)) &&
+                (!string.Equals(SyncProtocolHelpers.Normalize(Protocol), SyncProtocolHelpers.Sftp, StringComparison.Ordinal) || !string.IsNullOrWhiteSpace(Username));
 
             var isDirty = BuildFingerprint() != _savedFingerprint;
             var requiresConnectionTest = BuildConnectionFingerprint() != _validatedConnectionFingerprint;
@@ -295,7 +356,9 @@ namespace XboxRemoteSync.ViewModels
             CanTestConnection = !_isBusy &&
                 !string.IsNullOrWhiteSpace(Protocol) &&
                 !string.IsNullOrWhiteSpace(Server) &&
-                !string.IsNullOrWhiteSpace(Share) &&
+                HasValidPort() &&
+                (!SyncProtocolHelpers.RequiresShare(Protocol) || !string.IsNullOrWhiteSpace(Share)) &&
+                (!string.Equals(SyncProtocolHelpers.Normalize(Protocol), SyncProtocolHelpers.Sftp, StringComparison.Ordinal) || !string.IsNullOrWhiteSpace(Username)) &&
                 requiresConnectionTest;
 
             if (!_isBusy)
@@ -318,6 +381,7 @@ namespace XboxRemoteSync.ViewModels
                 Name?.Trim() ?? string.Empty,
                 Protocol?.Trim().ToUpperInvariant() ?? "SMB",
                 Server?.Trim() ?? string.Empty,
+                Port?.Trim() ?? string.Empty,
                 Share?.Trim() ?? string.Empty,
                 string.IsNullOrWhiteSpace(RemoteRoot) ? "/" : RemoteRoot.Trim(),
                 Username?.Trim() ?? string.Empty,
@@ -329,9 +393,28 @@ namespace XboxRemoteSync.ViewModels
             return string.Join("|",
                 Protocol?.Trim().ToUpperInvariant() ?? "SMB",
                 Server?.Trim() ?? string.Empty,
+                Port?.Trim() ?? string.Empty,
                 Share?.Trim() ?? string.Empty,
                 string.IsNullOrWhiteSpace(RemoteRoot) ? "/" : RemoteRoot.Trim(),
                 Username?.Trim() ?? string.Empty);
+        }
+
+        private bool HasValidPort()
+        {
+            return string.IsNullOrWhiteSpace(Port) || TryParsePort(out _);
+        }
+
+        private bool TryParsePort(out int port)
+        {
+            if (string.IsNullOrWhiteSpace(Port))
+            {
+                port = 0;
+                return false;
+            }
+
+            return int.TryParse(Port.Trim(), NumberStyles.None, CultureInfo.InvariantCulture, out port)
+                && port > 0
+                && port <= 65535;
         }
     }
 }

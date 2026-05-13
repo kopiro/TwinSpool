@@ -5,6 +5,7 @@ using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Navigation;
 using Windows.Storage.Pickers;
 using XboxRemoteSync.Models;
+using XboxRemoteSync.Utilities;
 using XboxRemoteSync.ViewModels;
 
 namespace XboxRemoteSync.Views
@@ -21,12 +22,28 @@ namespace XboxRemoteSync.Views
 
         protected override async void OnNavigatedTo(NavigationEventArgs e)
         {
-            await ViewModel.InitializeAsync(e.Parameter as SyncProfile);
+            try
+            {
+                await ViewModel.InitializeAsync(e.Parameter as SyncProfile);
+            }
+            catch (Exception ex)
+            {
+                await DiagnosticsLog.AppendAsync("ProfileEditorPage.OnNavigatedTo", ex);
+                ViewModel.SetStatusMessage("Unable to load the profile editor.");
+            }
         }
 
         private async void Save_Click(object sender, RoutedEventArgs e)
         {
-            await ViewModel.SaveAsync(PasswordBox.Password);
+            try
+            {
+                await ViewModel.SaveAsync(PasswordBox.Password);
+            }
+            catch (Exception ex)
+            {
+                await DiagnosticsLog.AppendAsync("ProfileEditorPage.Save_Click", ex);
+                ViewModel.SetStatusMessage(ex.Message);
+            }
         }
 
         private async void TestConnection_Click(object sender, RoutedEventArgs e)
@@ -35,9 +52,11 @@ namespace XboxRemoteSync.Views
             {
                 await ViewModel.TestConnectionAsync(PasswordBox.Password);
             }
-            catch (System.Exception)
+            catch (Exception ex)
             {
+                await DiagnosticsLog.AppendAsync("ProfileEditorPage.TestConnection_Click", ex);
                 ViewModel.NotifyTestConnectionFailed();
+                ViewModel.SetStatusMessage(ex.Message);
             }
         }
 

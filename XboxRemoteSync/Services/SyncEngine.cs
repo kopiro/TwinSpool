@@ -15,18 +15,15 @@ namespace XboxRemoteSync.Services
         private readonly IProfileRepository _profileRepository;
         private readonly IRunLogRepository _runLogRepository;
         private readonly CredentialProtector _credentialProtector;
-        private readonly ISyncTransport _transport;
 
         public SyncEngine(
             IProfileRepository profileRepository,
             IRunLogRepository runLogRepository,
-            CredentialProtector credentialProtector,
-            ISyncTransport transport)
+            CredentialProtector credentialProtector)
         {
             _profileRepository = profileRepository;
             _runLogRepository = runLogRepository;
             _credentialProtector = credentialProtector;
-            _transport = transport;
         }
 
         public async Task<SyncPlan> BuildPlanAsync(SyncProfile profile, CancellationToken cancellationToken)
@@ -38,11 +35,12 @@ namespace XboxRemoteSync.Services
                 throw new InvalidOperationException("Destination folder access is no longer valid. Re-select the USB folder.");
             }
 
-            await _transport.ConnectAsync(profile, password, cancellationToken);
+            var transport = SyncTransportFactory.Create(profile.Protocol);
+            await transport.ConnectAsync(profile, password, cancellationToken);
             try
             {
                 var syncIndex = await StorageHelpers.LoadSyncIndexAsync(destination);
-                var remoteEntries = await _transport.EnumerateAsync(profile, cancellationToken);
+                var remoteEntries = await transport.EnumerateAsync(profile, cancellationToken);
                 var plan = new SyncPlan();
 
                 foreach (var entry in remoteEntries.OrderBy(item => item.RelativePath))
@@ -71,7 +69,7 @@ namespace XboxRemoteSync.Services
             }
             finally
             {
-                await _transport.DisconnectAsync();
+                await transport.DisconnectAsync();
             }
         }
 
@@ -105,16 +103,17 @@ namespace XboxRemoteSync.Services
                 });
             });
 
-            progress?.Report(new SyncJobProgress { State = SyncJobState.Connecting, Message = "Connecting to SMB share..." });
+            var transport = SyncTransportFactory.Create(profile.Protocol);
+            progress?.Report(new SyncJobProgress { State = SyncJobState.Connecting, Message = "Connecting to remote source..." });
             EmitLog(logEntries, progress, profile.Id, "sync-verbose", "Preparing sync job.");
-            await _transport.ConnectAsync(profile, password, cancellationToken, verboseLog);
+            await transport.ConnectAsync(profile, password, cancellationToken, verboseLog);
 
             try
             {
                 progress?.Report(new SyncJobProgress { State = SyncJobState.ScanningRemote, Message = "Scanning remote content..." });
                 var syncIndex = await StorageHelpers.LoadSyncIndexAsync(destination);
                 EmitLog(logEntries, progress, profile.Id, "sync-verbose", "Loaded local sync index.");
-                var plan = await BuildPlanWithoutReconnectAsync(profile, syncIndex, cancellationToken, verboseLog, progress);
+                var plan = await BuildPlanWithoutReconnectAsync(profile, syncIndex, transport, cancellationToken, verboseLog, progress);
                 var totalBytes = plan.FilesToCopy.Sum(item => item.Entry.Size);
                 var copiedBytes = 0L;
                 var completedFiles = 0;
@@ -154,7 +153,7 @@ namespace XboxRemoteSync.Services
                             BytesTransferred = copiedBytes,
                             TotalBytes = totalBytes
                         });
-                        using (var remoteStream = await _transport.OpenReadAsync(profile, item.Entry, cancellationToken, verboseLog))
+                        using (var remoteStream = await transport.OpenReadAsync(profile, item.Entry, cancellationToken, verboseLog))
                         {
                             await StorageHelpers.CopyToFileAtomicallyAsync(
                                 remoteStream,
@@ -236,18 +235,19 @@ namespace XboxRemoteSync.Services
             }
             finally
             {
-                await _transport.DisconnectAsync();
+                await transport.DisconnectAsync();
             }
         }
 
         private async Task<SyncPlan> BuildPlanWithoutReconnectAsync(
             SyncProfile profile,
             IReadOnlyDictionary<string, SyncEntry> syncIndex,
+            ISyncTransport transport,
             CancellationToken cancellationToken,
             IProgress<RunLogEntry> verboseLog,
             IProgress<SyncJobProgress> progress)
         {
-            var remoteEntries = await _transport.EnumerateAsync(profile, cancellationToken, verboseLog);
+            var remoteEntries = await transport.EnumerateAsync(profile, cancellationToken, verboseLog);
             EmitLog(null, progress, profile.Id, "sync-verbose", $"Planning {remoteEntries.Count} remote file(s).");
             var plan = new SyncPlan();
 

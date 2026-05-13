@@ -26,7 +26,7 @@
   </Resources>
   <Applications>
     <Application Id="App" Executable="XboxRemoteSync.exe" EntryPoint="XboxRemoteSync.App">
-      <uap:VisualElements DisplayName="Xbox Remote Sync" Description="Incremental SMB to USB sync for sideloaded Xbox content libraries." BackgroundColor="#101820" Square150x150Logo="Assets\Square150x150Logo.png" Square44x44Logo="Assets\Square44x44Logo.png">
+      <uap:VisualElements DisplayName="Xbox Remote Sync" Description="Incremental network to USB sync for sideloaded Xbox content libraries." BackgroundColor="#101820" Square150x150Logo="Assets\Square150x150Logo.png" Square44x44Logo="Assets\Square44x44Logo.png">
         <uap:DefaultTile Wide310x150Logo="Assets\Wide310x150Logo.png" Square310x310Logo="Assets\Square310x310Logo.png" />
         <uap:SplashScreen Image="Assets\SplashScreen.png" />
         <uap:InitialRotationPreference>
@@ -179,7 +179,6 @@
   <build:Metadata>
     <build:Item Name="TargetFrameworkMoniker" Value=".NETCore,Version=v5.0" />
     <build:Item Name="VisualStudio" Version="18.0" />
-    <build:Item Name="VisualStudioEdition" Value="Microsoft Visual Studio Community 2026" />
     <build:Item Name="OperatingSystem" Version="10.0.26100.1 (WinBuild.160101.0800)" />
     <build:Item Name="Microsoft.Build.AppxPackage.dll" Version="18.4.38752.31469" />
     <build:Item Name="ProjectGUID" Value="{B52CB45C-2644-4BF4-B5DE-2F95D5A6E7A1}" />

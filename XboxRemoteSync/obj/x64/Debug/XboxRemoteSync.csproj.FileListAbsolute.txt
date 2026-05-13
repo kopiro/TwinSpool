@@ -72,3 +72,17 @@ C:\Users\deste\Documents\XBOXRemoteSync\XboxRemoteSync\obj\x64\Debug\Views\LogsP
 C:\Users\deste\Documents\XBOXRemoteSync\XboxRemoteSync\obj\x64\Debug\Views\LogsPage.g.cs
 C:\Users\deste\Documents\XBOXRemoteSync\XboxRemoteSync\obj\x64\Debug\Views\LogsPage.xaml
 C:\Users\deste\Documents\XBOXRemoteSync\XboxRemoteSync\obj\x64\Debug\Views\LogsPage.xbf
+C:\Users\deste\Documents\XBOXRemoteSync\XboxRemoteSync\bin\x64\Debug\BouncyCastle.Cryptography.dll
+C:\Users\deste\Documents\XBOXRemoteSync\XboxRemoteSync\bin\x64\Debug\Microsoft.Bcl.AsyncInterfaces.dll
+C:\Users\deste\Documents\XBOXRemoteSync\XboxRemoteSync\bin\x64\Debug\Microsoft.Extensions.DependencyInjection.Abstractions.dll
+C:\Users\deste\Documents\XBOXRemoteSync\XboxRemoteSync\bin\x64\Debug\Microsoft.Extensions.Logging.Abstractions.dll
+C:\Users\deste\Documents\XBOXRemoteSync\XboxRemoteSync\bin\x64\Debug\Renci.SshNet.dll
+C:\Users\deste\Documents\XBOXRemoteSync\XboxRemoteSync\bin\x64\Debug\System.Formats.Asn1.dll
+C:\Users\deste\Documents\XBOXRemoteSync\XboxRemoteSync\bin\x64\Debug\System.Runtime.CompilerServices.Unsafe.dll
+C:\Users\deste\Documents\XBOXRemoteSync\XboxRemoteSync\obj\x64\Debug\FxResources.Microsoft.Extensions.DependencyInjection.Abstractions.SR.resw
+C:\Users\deste\Documents\XBOXRemoteSync\XboxRemoteSync\obj\x64\Debug\FxResources.Microsoft.Extensions.Logging.Abstractions.SR.resw
+C:\Users\deste\Documents\XBOXRemoteSync\XboxRemoteSync\obj\x64\Debug\FxResources.System.Formats.Asn1.SR.resw
+C:\Users\deste\Documents\XBOXRemoteSync\XboxRemoteSync\obj\x64\Debug\package.map.txt
+C:\Users\deste\Documents\XBOXRemoteSync\XboxRemoteSync\obj\x64\Debug\_pkginfo.txt
+C:\Users\deste\Documents\XBOXRemoteSync\XboxRemoteSync\obj\x64\Debug\Symbols\XboxRemoteSync.pdb
+C:\Users\deste\Documents\XBOXRemoteSync\XboxRemoteSync\obj\x64\Debug\_installerinfo.log

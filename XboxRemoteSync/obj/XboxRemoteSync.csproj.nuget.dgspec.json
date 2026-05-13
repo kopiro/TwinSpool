@@ -56,6 +56,10 @@
             "SMBLibrary": {
               "target": "Package",
               "version": "[1.5.2, )"
+            },
+            "SSH.NET": {
+              "target": "Package",
+              "version": "[2025.1.0, )"
             }
           },
           "imports": [

@@ -8,8 +8,6 @@ namespace XboxRemoteSync.Services
 
         public static CredentialProtector CredentialProtector { get; private set; }
 
-        public static ISyncTransport SyncTransport { get; private set; }
-
         public static ISyncEngine SyncEngine { get; private set; }
 
         public static void Initialize()
@@ -17,8 +15,7 @@ namespace XboxRemoteSync.Services
             CredentialProtector = new CredentialProtector();
             ProfileRepository = new JsonProfileRepository();
             RunLogRepository = new JsonRunLogRepository();
-            SyncTransport = new SmbSyncTransport();
-            SyncEngine = new SyncEngine(ProfileRepository, RunLogRepository, CredentialProtector, SyncTransport);
+            SyncEngine = new SyncEngine(ProfileRepository, RunLogRepository, CredentialProtector);
         }
     }
 }

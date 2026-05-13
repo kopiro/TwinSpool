@@ -19,11 +19,14 @@
                 <TextBlock Text="Server" Style="{StaticResource FieldLabelTextStyle}" />
                 <TextBox Text="{Binding Server, Mode=TwoWay}" PlaceholderText="192.168.1.10 or nas.local" />
 
-                <TextBlock Text="Share" Style="{StaticResource FieldLabelTextStyle}" />
-                <TextBox Text="{Binding Share, Mode=TwoWay}" PlaceholderText="MediaShare" />
+                <TextBlock Text="Port" Style="{StaticResource FieldLabelTextStyle}" />
+                <TextBox Text="{Binding Port, Mode=TwoWay}" PlaceholderText="22 for SFTP, leave blank for default" InputScope="Number" />
 
-                <TextBlock Text="Subdirectory" Style="{StaticResource FieldLabelTextStyle}" />
-                <TextBox Text="{Binding RemoteRoot, Mode=TwoWay}" PlaceholderText="/library" />
+                <TextBlock Text="{Binding ShareLabel}" Style="{StaticResource FieldLabelTextStyle}" Visibility="{Binding ShareVisibility}" />
+                <TextBox Text="{Binding Share, Mode=TwoWay}" PlaceholderText="{Binding SharePlaceholder}" IsEnabled="{Binding IsShareEnabled}" Visibility="{Binding ShareVisibility}" />
+
+                <TextBlock Text="{Binding RemoteRootLabel}" Style="{StaticResource FieldLabelTextStyle}" />
+                <TextBox Text="{Binding RemoteRoot, Mode=TwoWay}" PlaceholderText="{Binding RemoteRootPlaceholder}" />
 
                 <TextBlock Text="Username" Style="{StaticResource FieldLabelTextStyle}" />
                 <TextBox Text="{Binding Username, Mode=TwoWay}" PlaceholderText="xboxsync" />
@@ -63,6 +66,8 @@
                         </StackPanel>
                     </Button>
                 </StackPanel>
+
+                <TextBlock Text="{Binding StatusMessage}" Style="{StaticResource BodyTextStyle}" Margin="0,12,0,0" TextWrapping="WrapWholeWords" />
             </StackPanel>
         </Grid>
     </ScrollViewer>
